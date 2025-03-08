@@ -1,6 +1,8 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
-from contextlib import asynccontextmanager
+from routers import auth_router
 
 
 @asynccontextmanager
@@ -13,3 +15,5 @@ async def lifespan(app: FastAPI):
 
 
 service = FastAPI(lifespan=lifespan)
+
+service.include_router(auth_router)
