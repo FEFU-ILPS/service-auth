@@ -11,12 +11,12 @@ from schemas.auth import RegisterUserRequest
 router = APIRouter()
 
 
-@router.get("/authenticate")
+@router.get("/authenticate", summary="Аутентификация пользователя")
 async def authenticate_user() -> None:
     pass
 
 
-@router.post("/register")
+@router.post("/register", summary="Регистрация пользователя")
 async def register_user(
     user_data: RegisterUserRequest = Body(...),
     db: AsyncSession = Depends(get_db),
@@ -40,7 +40,7 @@ async def register_user(
 
     # * Добавляем пароль привязанный к пользователю
     hash = bc.hashpw(user_data.password.encode(), bc.gensalt())
-    new_user_password = Password(user=new_user, hash=hash)
+    new_user_password = Password(user=new_user, hash=hash.decode())
     db.add(new_user_password)
     await db.commit()
 
@@ -48,6 +48,6 @@ async def register_user(
         status_code=status.HTTP_201_CREATED,
         content={
             "message": "User registered successfully",
-            "user_uuid": new_user.id,
+            "user_uuid": str(new_user.id),
         },
     )
