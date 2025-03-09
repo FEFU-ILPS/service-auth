@@ -18,7 +18,7 @@ class User(BaseORM):
     is_disabled = Column(Boolean, nullable=False, default=False)
 
     # * Relations
-    password = relationship("Password", back_populates="user")
+    password = relationship("Password", back_populates="user", uselist=False)
 
     # * Constraints
     __table_args__ = (
@@ -42,7 +42,7 @@ class Password(BaseORM):
     hash = Column(Text, unique=True, nullable=False)
 
     # * Relations
-    user = relationship("User", back_populates="password")
+    user = relationship("User", back_populates="password", uselist=False)
 
     # * Constraints
     __table_args__ = (
