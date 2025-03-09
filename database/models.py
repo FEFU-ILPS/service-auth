@@ -24,7 +24,7 @@ class User(BaseORM):
     __table_args__ = (
         Index("user_id_idx", id, postgresql_using="hash"),
         Index("user_name_idx", name, postgresql_using="hash"),
-        Index("user_email_idx", name, postgresql_using="hash"),
+        Index("user_email_idx", email, postgresql_using="hash"),
     )
 
 
@@ -33,7 +33,7 @@ class Password(BaseORM):
 
     # * Columns
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user = Column(
+    user_id = Column(
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False,
