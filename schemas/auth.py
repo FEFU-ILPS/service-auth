@@ -1,6 +1,12 @@
 from pydantic import BaseModel, Field, field_validator
+from fastapi import Query
 from typing import Annotated
 import re
+
+
+class AuthenticateUserRequest(BaseModel):
+    name: Annotated[str, Query(..., max_length=255, examples=["nagibator_rus"])]
+    password: Annotated[str, Query(max_length=40, min_length=8, examples=["!Password123"])]
 
 
 class RegisterUserRequest(BaseModel):
