@@ -9,7 +9,7 @@ class DatabaseConfiguration(BaseSettings):
     POSTGRES_HOST: str
 
     # * Опциональные переменные
-    POSTGRES_USER: str = "service-auth"
+    POSTGRES_USER: str = "service_auth"
     POSTGRES_NAME: str = "auth"
     POSTGRES_PORT: int = 5432
 
