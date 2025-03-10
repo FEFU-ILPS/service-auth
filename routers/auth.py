@@ -12,7 +12,7 @@ from utils.auth import encode_access_token, identificate_user
 router = APIRouter()
 
 
-@router.get("/login", summary="Аутентификация пользователя")
+@router.post("/login", summary="Аутентификация пользователя")
 async def authenticate_user(
     user_data: AuthenticateUserRequest = Depends(),
     db: AsyncSession = Depends(get_db),
