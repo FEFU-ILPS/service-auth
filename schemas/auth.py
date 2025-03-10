@@ -33,3 +33,8 @@ class RegisterUserRequest(BaseModel):
             raise ValueError("Password must contain at least one special character")
 
         return value
+
+
+class AuthorizationTokenResponse(BaseModel):
+    access_token: Annotated[str, Field(...)]
+    token_type: Annotated[str, Field(default="Bearer")]
