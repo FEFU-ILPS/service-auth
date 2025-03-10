@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, String, Boolean, Integer, Text, ForeignKey, Index
+from sqlalchemy import Column, String, Boolean, Integer, Text, ForeignKey, Index, CheckConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -25,6 +25,10 @@ class User(BaseORM):
         Index("user_id_idx", id, postgresql_using="hash"),
         Index("user_name_idx", name, postgresql_using="hash"),
         Index("user_email_idx", email, postgresql_using="hash"),
+        CheckConstraint(
+            r"email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'",
+            name="check_email_format",
+        ),
     )
 
 
