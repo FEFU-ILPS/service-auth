@@ -26,7 +26,7 @@ async def identificate_user(db: AsyncSession, name: str) -> Optional[User]:
     return result.scalar_one_or_none()
 
 
-async def encode_access_token(subject: str, expiration_delta: Optional[timedelta]) -> str:
+async def encode_access_token(subject: str, expiration_delta: Optional[timedelta] = None) -> str:
     """Генерирует токенд тоступа для пользователя (subject).
 
     Args:
