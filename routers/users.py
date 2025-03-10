@@ -41,7 +41,7 @@ async def get_user(
     return RegisteredUserResponse.model_validate(user)
 
 
-@router.update("/{uuid}")
+@router.patch("/{uuid}")
 async def update_user(
     uuid: Annotated[UUID, Path(...)],
     db: AsyncSession = Depends(get_db),
