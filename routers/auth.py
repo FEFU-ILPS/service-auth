@@ -3,32 +3,31 @@ from fastapi import APIRouter, Body, Depends, status
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 
 from database import get_db
 from database.models import Password, User
-from schemas.auth import RegisterUserRequest, AuthenticateUserRequest
+from schemas.auth import AuthenticateUserRequest, AuthorizationTokenResponse, RegisterUserRequest
+from utils.auth import encode_access_token, identificate_user
 
 router = APIRouter()
 
 
-@router.get("/authenticate", summary="Аутентификация пользователя")
+@router.get("/login", summary="Аутентификация пользователя")
 async def authenticate_user(
     user_data: AuthenticateUserRequest = Depends(),
     db: AsyncSession = Depends(get_db),
-) -> None:
-    stmt = select(User).where(User.name == user_data.name)
-    result = await db.execute(stmt)
-    user = result.scalar_one_or_none()
-
+) -> AuthorizationTokenResponse:
+    """Аутентифицирует пользователя, возвращает JWT токен авторизации в случае успеха."""
+    # Идентификация
+    user = await identificate_user(db, user_data.name)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User identification failed.",
         )
 
+    # Аутентификация
     password = await user.awaitable_attrs.password
-
     is_valid = bc.checkpw(user_data.password.encode(), password.hash.encode())
     if not is_valid:
         raise HTTPException(
@@ -36,10 +35,8 @@ async def authenticate_user(
             detail="User authentication failed.",
         )
 
-    return {
-        "access_token": "token_here",
-        "authentication_type": "Bearer",
-    }
+    access_token = await encode_access_token(subject=user.name)
+    return AuthorizationTokenResponse(access_token=access_token)
 
 
 @router.post("/register", summary="Регистрация пользователя")
@@ -47,10 +44,8 @@ async def register_user(
     user_data: RegisterUserRequest = Body(...),
     db: AsyncSession = Depends(get_db),
 ) -> JSONResponse:
-    """Регистрирует нового пользователя, создает для него и его пароля
-    записи в базе данных.
-    """
-    # * Добавляем нового пользователя
+    """Регистрирует нового пользователя, создает для него и его пароля записи в базе данных."""
+    # Создание нового пользователя
     new_user = User(name=user_data.name, email=user_data.email)
     try:
         db.add(new_user)
@@ -64,7 +59,7 @@ async def register_user(
             detail="User with this data already created.",
         )
 
-    # * Добавляем пароль привязанный к пользователю
+    # Создание пароля привязанного к пользователю
     hash = bc.hashpw(user_data.password.encode(), bc.gensalt())
     new_user_password = Password(user=new_user, hash=hash.decode())
     db.add(new_user_password)
