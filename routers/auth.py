@@ -14,7 +14,7 @@ router = APIRouter()
 
 @router.post("/login", summary="Аутентификация пользователя")
 async def authenticate_user(
-    user_data: AuthenticateUserRequest = Depends(),
+    user_data: AuthenticateUserRequest,
     db: AsyncSession = Depends(get_db),
 ) -> AuthorizationTokenResponse:
     """Аутентифицирует пользователя, возвращает JWT токен авторизации в случае успеха."""
@@ -72,3 +72,9 @@ async def register_user(
             "user_uuid": str(new_user.id),
         },
     )
+
+
+# TODO: Write me
+@router.get("/verify", summary="Авторизация пользователя")
+async def authorize_user() -> None:
+    pass
