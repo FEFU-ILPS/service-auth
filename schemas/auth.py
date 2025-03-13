@@ -36,6 +36,6 @@ class RegisterUserRequest(BaseModel):
         return value
 
 
-class AuthorizationTokenResponse(BaseModel):
+class AuthenticateUserResponse(BaseModel):
     access_token: Annotated[str, Field(...)]
     token_type: Annotated[str, Field(default="Bearer")]

@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from database.models import Password, User
-from schemas.auth import AuthenticateUserRequest, AuthorizationTokenResponse, RegisterUserRequest
+from schemas.auth import AuthenticateUserRequest, AuthenticateUserResponse, RegisterUserRequest
 from utils.auth import encode_access_token, identificate_user
 
 router = APIRouter()
@@ -16,7 +16,7 @@ router = APIRouter()
 async def authenticate_user(
     user_data: AuthenticateUserRequest,
     db: AsyncSession = Depends(get_db),
-) -> AuthorizationTokenResponse:
+) -> AuthenticateUserResponse:
     """Аутентифицирует пользователя, возвращает JWT токен авторизации в случае успеха."""
     # Идентификация
     user = await identificate_user(db, user_data.name)
@@ -36,7 +36,7 @@ async def authenticate_user(
         )
 
     access_token = await encode_access_token(subject=user.name)
-    return AuthorizationTokenResponse(access_token=access_token)
+    return AuthenticateUserResponse(access_token=access_token)
 
 
 @router.post("/register", summary="Регистрация пользователя")
