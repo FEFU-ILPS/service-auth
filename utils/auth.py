@@ -87,4 +87,4 @@ async def decode_access_token(access_token: str) -> Optional[UUID]:
         return None
 
     user_uuid = payload.get("sub")
-    return user_uuid
+    return UUID(user_uuid)
