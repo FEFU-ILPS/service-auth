@@ -80,6 +80,7 @@ async def authorize_user(
     user_data: AuthorizeUserRequest = Body(...),
     db: AsyncSession = Depends(get_db),
 ) -> AuthorizeUserResponse:
+    # Расшифровка JWT токена доступа
     user_id = decode_access_token(access_token=user_data.access_token)
     if user_id is None:
         raise HTTPException(
