@@ -14,7 +14,7 @@ class DatabaseConfiguration(BaseSettings):
     POSTGRES_PORT: int = 5432
 
     @property
-    def DATABASE_URL(self) -> str:
+    def URL(self) -> str:
         return "postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}".format(
             user=self.POSTGRES_USER,
             password=self.POSTGRES_PASSWORD,
