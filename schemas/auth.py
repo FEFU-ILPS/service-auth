@@ -1,5 +1,6 @@
 import re
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import Body
 from pydantic import BaseModel, Field, field_validator
@@ -8,6 +9,11 @@ from pydantic import BaseModel, Field, field_validator
 class AuthenticateUserRequest(BaseModel):
     name: Annotated[str, Body(max_length=255, examples=["nagibator_rus"])]
     password: Annotated[str, Body(max_length=40, min_length=8, examples=["!Password123"])]
+
+
+class AuthenticateUserResponse(BaseModel):
+    access_token: Annotated[str, Field(...)]
+    token_type: Annotated[str, Field(default="Bearer")]
 
 
 class RegisterUserRequest(BaseModel):
@@ -36,6 +42,6 @@ class RegisterUserRequest(BaseModel):
         return value
 
 
-class AuthenticateUserResponse(BaseModel):
-    access_token: Annotated[str, Field(...)]
-    token_type: Annotated[str, Field(default="Bearer")]
+class RegisterUserResponse(BaseModel):
+    id: Annotated[UUID, Field(...)]
+    name: Annotated[str, Field(..., max_length=255, examples=["nagibator_rus"])]

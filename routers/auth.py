@@ -6,8 +6,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from database.models import Password, User
-from schemas.auth import AuthenticateUserRequest, AuthenticateUserResponse, RegisterUserRequest
-from utils.auth import encode_access_token, identificate_user
+from schemas.auth import (
+    AuthenticateUserRequest,
+    AuthenticateUserResponse,
+    RegisterUserRequest,
+    RegisterUserResponse,
+)
+from utils.auth import decode_access_token, encode_access_token, identificate_user
 
 router = APIRouter()
 
@@ -43,7 +48,7 @@ async def authenticate_user(
 async def register_user(
     user_data: RegisterUserRequest = Body(...),
     db: AsyncSession = Depends(get_db),
-) -> JSONResponse:
+) -> RegisterUserResponse:
     """Регистрирует нового пользователя, создает для него и его пароля записи в базе данных."""
     # Создание нового пользователя
     new_user = User(name=user_data.name, email=user_data.email)
@@ -65,16 +70,10 @@ async def register_user(
     db.add(new_user_password)
     await db.commit()
 
-    return JSONResponse(
-        status_code=status.HTTP_201_CREATED,
-        content={
-            "message": "User registered successfully",
-            "user_uuid": str(new_user.id),
-        },
-    )
+    return RegisterUserResponse(id=new_user.id, name=new_user.name)
 
 
 # TODO: Write me
 @router.get("/verify", summary="Авторизация пользователя")
 async def authorize_user() -> None:
-    pass
+    subject = decode_access_token()
