@@ -45,3 +45,13 @@ class RegisterUserRequest(BaseModel):
 class RegisterUserResponse(BaseModel):
     id: Annotated[UUID, Field(..., examples=["16fd2706-8baf-433b-82eb-8c7fada847da"])]
     name: Annotated[str, Field(..., max_length=255, examples=["nagibator_rus"])]
+
+
+class AuthorizeUserRequest(BaseModel):
+    access_token: Annotated[str, Field(...)]
+
+
+class AuthorizeUserResponse(BaseModel):
+    id: Annotated[UUID, Field(..., examples=["16fd2706-8baf-433b-82eb-8c7fada847da"])]
+    name: Annotated[str, Field(..., max_length=255, examples=["nagibator_rus"])]
+    is_admin: Annotated[bool, Field(..., examples=["False"])]

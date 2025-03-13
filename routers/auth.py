@@ -1,7 +1,7 @@
 import bcrypt as bc
 from fastapi import APIRouter, Body, Depends, status
 from fastapi.exceptions import HTTPException
-from fastapi.responses import JSONResponse
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
@@ -9,6 +9,8 @@ from database.models import Password, User
 from schemas.auth import (
     AuthenticateUserRequest,
     AuthenticateUserResponse,
+    AuthorizeUserRequest,
+    AuthorizeUserResponse,
     RegisterUserRequest,
     RegisterUserResponse,
 )
@@ -73,7 +75,26 @@ async def register_user(
     return RegisterUserResponse(id=new_user.id, name=new_user.name)
 
 
-# TODO: Write me
 @router.get("/verify", summary="Авторизация пользователя")
-async def authorize_user() -> None:
-    subject = decode_access_token()
+async def authorize_user(
+    user_data: AuthorizeUserRequest = Body(...),
+    db: AsyncSession = Depends(get_db),
+) -> AuthorizeUserResponse:
+    user_id = decode_access_token(access_token=user_data.access_token)
+    if user_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Access token is invalid.",
+        )
+
+    # Получение данных о пользователе
+    stmt = select(User).where((User.id == user_id) & (not User.is_disabled))
+    result = await db.execute(stmt)
+    user = result.scalar_one_or_none()
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User account is disabled or does not exist.",
+        )
+
+    return AuthorizeUserResponse(id=user.id, name=user.name, is_admin=user.is_admin)
