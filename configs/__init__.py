@@ -4,7 +4,7 @@ from .database import DatabaseConfiguration
 from .jwt import JwtConfiguration
 
 
-class Projectonfiguration(BaseSettings):
+class ProjectConfiguration(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="AUTH_")
 
     # * Вложенные группы настроек
@@ -15,6 +15,6 @@ class Projectonfiguration(BaseSettings):
     DEBUG_MODE: bool = True
 
 
-configs = Projectonfiguration()
+configs = ProjectConfiguration()
 
 __all__ = ("configs",)
