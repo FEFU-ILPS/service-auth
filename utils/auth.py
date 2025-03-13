@@ -3,7 +3,6 @@ from typing import Optional
 from uuid import UUID
 
 import jwt
-from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -56,6 +55,17 @@ async def encode_access_token(subject: UUID, expiration_delta: Optional[timedelt
 
 
 async def decode_access_token(access_token: str) -> Optional[UUID]:
+    """Декодирует и валидирует токен доступа пользователя,
+    возвращая `UUID` (subject) последнего.
+    В случае, если токен не действителен или не валиден, то
+    вернется `None`.
+
+    Args:
+        access_token (str): JWT Токен доступа.
+
+    Returns:
+        Optional[UUID]: UUID пользователя.
+    """
     try:
         payload = jwt.decode(
             jwt=access_token,
