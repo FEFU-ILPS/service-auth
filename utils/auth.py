@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional
+from uuid import UUID
 
 import jwt
+from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -26,11 +28,11 @@ async def identificate_user(db: AsyncSession, name: str) -> Optional[User]:
     return result.scalar_one_or_none()
 
 
-async def encode_access_token(subject: str, expiration_delta: Optional[timedelta] = None) -> str:
-    """Генерирует токенд тоступа для пользователя (subject).
+async def encode_access_token(subject: UUID, expiration_delta: Optional[timedelta] = None) -> str:
+    """Генерирует токен доступа для пользователя (subject).
 
     Args:
-        subject (str): UUID пользователя.
+        subject (UUID): UUID пользователя.
         expiration_delta (Optional[timedelta]): Дельта времени, через которое токен просрочится.
 
     Returns:
@@ -40,10 +42,39 @@ async def encode_access_token(subject: str, expiration_delta: Optional[timedelta
     now_time = datetime.now(tz=timezone.utc)
 
     payload = {
-        "sub": subject,
-        "iss": "ilps-service-auth",
+        "sub": str(subject),
+        "iss": configs.SERVICE_NAME,
         "exp": now_time + expiration_delta,
         "iat": now_time,
     }
 
-    return jwt.encode(payload=payload, key=configs.jwt.SECRET)
+    return jwt.encode(
+        payload=payload,
+        key=configs.jwt.SECRET,
+        algorithm=configs.jwt.ALGORITHM,
+    )
+
+
+async def decode_access_token(access_token: str) -> Optional[UUID]:
+    try:
+        payload = jwt.decode(
+            jwt=access_token,
+            key=configs.jwt.SECRET,
+            algorithms=[configs.jwt.ALGORITHM],
+            issuer=configs.SERVICE_NAME,
+            leeway=2,
+            options={
+                "require": [
+                    "exp",
+                    "iss",
+                    "sub",
+                    "iat",
+                ]
+            },
+        )
+
+    except (jwt.MissingRequiredClaimError, jwt.ExpiredSignatureError, jwt.InvalidIssuerError):
+        return None
+
+    user_uuid = payload.get("sub")
+    return user_uuid
