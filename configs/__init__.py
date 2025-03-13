@@ -13,6 +13,7 @@ class ProjectConfiguration(BaseSettings):
 
     # * Опциональные переменные
     DEBUG_MODE: bool = True
+    SERVICE_NAME: str = "ilps-service-auth"
 
 
 configs = ProjectConfiguration()
