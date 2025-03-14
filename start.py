@@ -1,4 +1,5 @@
 import uvicorn
+
 from configs import configs
 
 if __name__ == "__main__":
@@ -8,4 +9,5 @@ if __name__ == "__main__":
         port=8062,
         reload=configs.DEBUG_MODE,
         date_header=True,
+        use_colors=True,
     )
