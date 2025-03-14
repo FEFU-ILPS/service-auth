@@ -46,4 +46,5 @@ async def update_user(
     uuid: Annotated[UUID, Path(...)],
     db: AsyncSession = Depends(get_db),
 ) -> RegisteredUserResponse:
+    # TODO: Write me
     pass
