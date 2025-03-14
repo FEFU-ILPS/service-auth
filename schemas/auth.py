@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class AuthenticateUserRequest(BaseModel):
-    name: Annotated[str, Body(max_length=255, examples=["nagibator_rus"])]
+    username: Annotated[str, Body(max_length=255, examples=["nagibator_rus"])]
     password: Annotated[str, Body(max_length=40, min_length=8, examples=["!Password123"])]
 
 

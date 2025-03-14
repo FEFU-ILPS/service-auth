@@ -26,7 +26,7 @@ async def authenticate_user(
 ) -> AuthenticateUserResponse:
     """Аутентифицирует пользователя, возвращает JWT токен авторизации в случае успеха."""
     # Идентификация
-    user = await identificate_user(db, user_data.name)
+    user = await identificate_user(db, user_data.username)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
