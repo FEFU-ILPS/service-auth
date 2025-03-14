@@ -42,7 +42,7 @@ async def authenticate_user(
             detail="User authentication failed.",
         )
 
-    access_token = await encode_access_token(subject=user.name)
+    access_token = await encode_access_token(subject=user.id)
     return AuthenticateUserResponse(access_token=access_token)
 
 
@@ -75,13 +75,14 @@ async def register_user(
     return RegisterUserResponse(id=new_user.id, name=new_user.name)
 
 
-@router.get("/verify", summary="Авторизация пользователя")
+@router.post("/verify", summary="Авторизация пользователя")
 async def authorize_user(
     user_data: AuthorizeUserRequest = Body(...),
     db: AsyncSession = Depends(get_db),
 ) -> AuthorizeUserResponse:
     # Расшифровка JWT токена доступа
-    user_id = decode_access_token(access_token=user_data.access_token)
+    user_id = await decode_access_token(access_token=user_data.access_token)
+    print(user_id)
     if user_id is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -89,7 +90,7 @@ async def authorize_user(
         )
 
     # Получение данных о пользователе
-    stmt = select(User).where((User.id == user_id) & (not User.is_disabled))
+    stmt = select(User).where((User.id == user_id) & (~User.is_disabled))
     result = await db.execute(stmt)
     user = result.scalar_one_or_none()
     if user is None:
