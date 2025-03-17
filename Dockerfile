@@ -2,11 +2,11 @@ FROM python:3.13-slim
 
 WORKDIR /service
 
-RUN pip install poetry
+RUN pip install poetry && poetry config virtualenvs.create false
 
 COPY ./pyproject.toml .
 
-RUN poetry config virtualenvs.create false && poetry install --only main --no-interaction --no-ansi --no-root
+RUN poetry install --only main --no-interaction --no-ansi --no-root
 
 COPY ./alembic.ini .
 
