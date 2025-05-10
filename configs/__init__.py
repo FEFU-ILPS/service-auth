@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from .database import DatabaseConfiguration
+from .default import DefaultConfiguration
 from .jwt import JwtConfiguration
 
 
@@ -10,6 +11,7 @@ class ProjectConfiguration(BaseSettings):
     # * Вложенные группы настроек
     database: DatabaseConfiguration = DatabaseConfiguration()
     jwt: JwtConfiguration = JwtConfiguration()
+    default: DefaultConfiguration = DefaultConfiguration()
 
     # * Опциональные переменные
     DEBUG_MODE: bool = True

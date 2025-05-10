@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+import database.scripts as scripts
 from database import disconnect_db
 from routers import auth_router, health_router, users_router
 
@@ -9,6 +10,7 @@ from routers import auth_router, health_router, users_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # on_startup
+    await scripts.init_default_admin()
 
     yield
 
