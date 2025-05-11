@@ -1,11 +1,11 @@
 import bcrypt as bc
+from loguru import logger
+from sqlalchemy.exc import SQLAlchemyError
 
 from configs import configs
-from sqlalchemy.exc import SQLAlchemyError
 
 from .engine import LocalAsyncSession
 from .models import Password, User
-from loguru import logger
 
 
 async def init_default_admin() -> None:

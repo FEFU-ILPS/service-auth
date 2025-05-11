@@ -2,11 +2,12 @@ from typing import Generic, TypeVar
 
 from pydantic import BaseModel, Field, computed_field
 
-
 M = TypeVar("M", bound=BaseModel)
 
 
 class Pagination(BaseModel):
+    """Класс Query параметров, необходимых для указания пагинации."""
+
     page: int = Field(gt=0, default=1, description="Номер страницы")
     size: int = Field(ge=0, default=50, description="Размер страницы")
 
@@ -18,6 +19,8 @@ class Pagination(BaseModel):
 
 
 class PaginatedResponse(BaseModel, Generic[M]):
+    """Класс ответа с пагинацией."""
+
     items: list[M] = Field(description="Список объектов")
     page: int = Field(gt=0, description="Номер страницы")
     size: int = Field(ge=0, description="Размер страницы")

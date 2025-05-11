@@ -1,8 +1,8 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Path, HTTPException, status
-from sqlalchemy import select, func
+from fastapi import APIRouter, Depends, HTTPException, Path, status
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
