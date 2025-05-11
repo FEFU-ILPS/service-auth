@@ -14,7 +14,7 @@ from .utils.pagination import PaginatedResponse, Pagination
 router = APIRouter(prefix="/users")
 
 
-@router.get("", summary="Получить всех пользователей")
+@router.get("/", summary="Получить всех пользователей")
 async def get_users(
     pg: Annotated[Pagination, Depends()],
     db: AsyncSession = Depends(get_db),
