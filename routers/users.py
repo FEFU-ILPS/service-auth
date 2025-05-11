@@ -1,32 +1,48 @@
-from typing import Annotated, List
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Path, HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from database.models import User
-from schemas.users import RegisteredUserResponse
+from schemas.users import UserResponse
+
+from .utils.pagination import PaginatedResponse, Pagination
 
 router = APIRouter(prefix="/users")
 
 
 @router.get("", summary="Получить всех пользователей")
-async def get_users(db: AsyncSession = Depends(get_db)) -> List[RegisteredUserResponse]:
-    """Возвращает полный список всех зарегистрированных пользователей."""
-    stmt = select(User)
+async def get_users(
+    pg: Annotated[Pagination, Depends()],
+    db: AsyncSession = Depends(get_db),
+) -> PaginatedResponse[UserResponse]:
+    """Постранично возвращает список всех зарегистрированных пользователей."""
+    stmt = select(User).offset(pg.skip).limit(pg.size)
     result = await db.execute(stmt)
     users = result.scalars().all()
 
-    return [RegisteredUserResponse.model_validate(user) for user in users]
+    stmt = select(func.count()).select_from(User)
+    result = await db.execute(stmt)
+    total = result.scalar_one()
+
+    items = [UserResponse.model_validate(user) for user in users]
+
+    return PaginatedResponse[UserResponse](
+        items=items,
+        page=pg.page,
+        size=pg.size,
+        total=total,
+    )
 
 
 @router.get("/{uuid}")
 async def get_user(
     uuid: Annotated[UUID, Path(...)],
     db: AsyncSession = Depends(get_db),
-) -> RegisteredUserResponse:
+) -> UserResponse:
     """Возвращает информацию о конкретном зарегистрированном пользователе по его UUID."""
     stmt = select(User).where(User.id == uuid)
     result = await db.execute(stmt)
@@ -38,13 +54,13 @@ async def get_user(
             detail="User not found.",
         )
 
-    return RegisteredUserResponse.model_validate(user)
+    return UserResponse.model_validate(user)
 
 
 @router.patch("/{uuid}")
 async def update_user(
     uuid: Annotated[UUID, Path(...)],
     db: AsyncSession = Depends(get_db),
-) -> RegisteredUserResponse:
+) -> UserResponse:
     # TODO: Write me
     pass

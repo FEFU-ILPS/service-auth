@@ -5,14 +5,13 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
-# TODO: Изменить название
-class RegisteredUserResponse(BaseModel):
+class UserResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: Annotated[UUID, Field(...)]
     name: Annotated[str, Field(max_length=255)]
     email: Annotated[str, Field(max_length=255)]
-    # TODO: Добавить поля
+    # TODO: Добавить поля, необходимые для OAuth2.0
 
     @field_validator("email")
     def validate_email(cls, value):
