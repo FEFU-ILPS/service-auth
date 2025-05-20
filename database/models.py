@@ -8,6 +8,8 @@ from .engine import BaseORM
 
 
 class User(BaseORM):
+    """ORM модель, описывающая пользователя системы."""
+
     __tablename__ = "users"
 
     # * Columns
@@ -33,6 +35,8 @@ class User(BaseORM):
 
 
 class Password(BaseORM):
+    """ORM модель, описывающая пароль пользователя системы."""
+
     __tablename__ = "passwords"
 
     # * Columns
