@@ -3,7 +3,7 @@ from uuid import UUID
 
 from fastapi import Body
 from pydantic import BaseModel, Field, field_validator
-from examples import (
+from .examples import (
     NAME_EXAMPLES,
     PASSWORD_EXAMPLES,
     EMAIL_EXAMPLES,
