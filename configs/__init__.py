@@ -2,6 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from .database import DatabaseConfiguration
 from .default import DefaultConfiguration
+from .graylog import GraylogConfiguration
 from .jwt import JwtConfiguration
 
 
@@ -12,6 +13,7 @@ class ProjectConfiguration(BaseSettings):
     database: DatabaseConfiguration = DatabaseConfiguration()
     jwt: JwtConfiguration = JwtConfiguration()
     default: DefaultConfiguration = DefaultConfiguration()
+    graylog: GraylogConfiguration = GraylogConfiguration()
 
     # * Опциональные переменные
     DEBUG_MODE: bool = True
